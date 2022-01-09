@@ -31,6 +31,17 @@ class BaseMixin:
             session.commit()
         return self
 
+    def update(self, session: Session, auto_commit=False, **kwargs):
+
+        for col in self.all_columns():
+            col_name = col.name
+            if col_name in kwargs:
+                setattr(self, col_name, kwargs.get(col_name))
+        session.add(self)
+        if auto_commit:
+            session.commit()
+        return self
+
 
 class Contents(Base, BaseMixin):
     __tablename__ = "content"

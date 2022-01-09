@@ -23,9 +23,15 @@ async def index(session: Session = Depends(db.session),):
 
     # Contents(title="title", content="asdasd<br><br>  4<br>  3 <br>2<br>1", ).create(session, auto_commit=True)
 
-    for row in session.query(Contents, Contents.id).all():
-        print(row.id)
+    first_one = session.query(Contents).first()
+    print(first_one.title)
+
+    for row in session.query(Contents).all():
+        print(row.title)
         print("이거보시라")
+
+    first_one.title = "title2"
+    Contents.update(first_one, session, auto_commit=True)
 
     current_time = datetime.utcnow()
 
