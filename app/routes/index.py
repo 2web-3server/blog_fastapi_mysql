@@ -21,18 +21,19 @@ async def index(session: Session = Depends(db.session),):
     # 테이블 생성 명령어
     Base.metadata.create_all(db.engine)
 
-    # Contents(title="title", content="asdasd<br><br>  4<br>  3 <br>2<br>1", ).create(session, auto_commit=True)
+    # Contents(title="연습이야", content="asdasd<br><br>  4<br>  3 <br>2<br>1", ).create(session, auto_commit=True)
 
-    first_one = session.query(Contents).first()
-    print(first_one.title)
+    first_one = session.query(Contents).filter(Contents.title == "연습이야")
+    for row in first_one:
+        print(row)
 
-    for row in session.query(Contents).all():
-        print(row.title)
-        print("이거보시라")
-
-    first_one.title = "title2"
-    Contents.update(first_one, session, auto_commit=True)
-
+    # for row in session.query(Contents).all():
+    #     print(row.title)
+    #     print("이거보시라")
+    #
+    # first_one.title = "title2"
+    # Contents.update(first_one, session, auto_commit=True)
+    # Contents.delete(first_one, session, auto_commit=True)
     current_time = datetime.utcnow()
 
     return Response(f"Notification API (UTC: {current_time.strftime('%Y.%m.%d %H:%M:%S')}")

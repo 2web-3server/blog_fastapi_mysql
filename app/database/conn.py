@@ -35,7 +35,6 @@ class SQLAlchemy:
         def startup():
             self._engine.connect()
             logging.info("DB connected.")
-            print(database_url)
 
         @app.on_event("shutdown")
         def shutdown():
