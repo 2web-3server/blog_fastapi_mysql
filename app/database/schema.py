@@ -48,11 +48,20 @@ class BaseMixin:
         return self
 
 
+class Category(Base, BaseMixin):
+    __tablename__ = "category"
+    name = Column(String(length=100),nullable=False)
+    contents = relationship("Contents", back_populates="category")
+
+
 class Contents(Base, BaseMixin):
     __tablename__ = "content"
     title = Column(String(length=255), nullable=False)
     content = Column(Text(), nullable=False, default="내용을 입력 해 주세요")
     thumb = Column(String(length=1000), nullable=False, default="No Thumb")
+    category_id = Column(Integer, ForeignKey("category.id"))
+
+    category = relationship("Category", back_populates="contents")
     comments = relationship("Comments", back_populates="owner")
 
 

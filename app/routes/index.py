@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from starlette.responses import Response
 
 from app.database.conn import db, Base
-from app.database.schema import Contents
+from app.database.schema import Contents, Category, Comments
 
 router = APIRouter()
 
@@ -21,11 +21,13 @@ async def index(session: Session = Depends(db.session),):
     # 테이블 생성 명령어
     Base.metadata.create_all(db.engine)
 
-    # Contents(title="연습이야", content="asdasd<br><br>  4<br>  3 <br>2<br>1", ).create(session, auto_commit=True)
+    # Contents(category_id=1, title="연습이야", content="asdasd<br><br>  4<br>  3 <br>2<br>1", ).create(session, auto_commit=True)
 
-    first_one = session.query(Contents).filter(Contents.title == "연습이야")
-    for row in first_one:
-        print(row)
+    Comments(content_id=2, email="tjrgh@kakao.com", password="임시비번", content="댓글내용").create(session, auto_commit=True)
+
+    # first_one = session.query(Contents).filter(Contents.title == "연습이야")
+    # for row in first_one:
+    #     print(row)
 
     # for row in session.query(Contents).all():
     #     print(row.title)
