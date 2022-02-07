@@ -5,6 +5,7 @@ from app.database.conn import Base
 
 class BaseMixin:
     id = Column(Integer, primary_key=True, index=True)
+    blogger = Column(String(length=255), nullable=False)
     created_at = Column(DateTime, nullable=False, default=func.utc_timestamp())
     updated_at = Column(DateTime, nullable=False, default=func.utc_timestamp(), onupdate=func.utc_timestamp())
 
@@ -50,7 +51,7 @@ class BaseMixin:
 
 class Category(Base, BaseMixin):
     __tablename__ = "category"
-    name = Column(String(length=100),nullable=False)
+    name = Column(String(length=100), nullable=False)
     contents = relationship("Contents", back_populates="category")
 
 
