@@ -14,15 +14,16 @@ router = APIRouter(
     tags=["contents"],
     responses={404: {"description": "Not found"}},
 )
-
-@router.get("/")
-async def contents(session: Session = Depends(db.session), ):
+# List
+@router.get("/{blogger}")
+async def contents(blogger: str,session: Session = Depends(db.session), ):
     # 글 전체목록 불러오기
-    results = session.query(Contents).all()
+    results = session.query(Contents).filter(Contents.blogger == blogger).all()
     return results
 
-@router.get("/{id}")
-async def content(id: int, session: Session = Depends(db.session)):
+# Detail
+@router.get("/{blogger}/{id}")
+async def content(blogger: str,id: int, session: Session = Depends(db.session)):
     # 글 받아오기
     content = session.query(Contents).filter(Contents.id == id).first()
     comments = session.query(Comments).filter(Comments.content_id == id).all()
@@ -37,7 +38,7 @@ class Item(BaseModel):
     title: str
     content: str
     blogger: str
-    thumb: str = None
+    thumb: str= None
 
 @router.post("/write")
 async def content(item:Item,session: Session = Depends(db.session)):
