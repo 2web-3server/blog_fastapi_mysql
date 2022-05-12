@@ -2,28 +2,37 @@ from datetime import datetime
 
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel
-from sqlalchemy import MetaData
 from sqlalchemy.orm import Session
-from starlette.responses import Response
-from starlette.responses import JSONResponse
-from app.database.conn import db, Base
-from app.database.schema import Contents, Comments
+from app.database.conn import db
+from app.database.schema import Contents, Comments, Category
 
 router = APIRouter(
     prefix="/contents",
     tags=["contents"],
     responses={404: {"description": "Not found"}},
 )
-# List
-@router.get("/{blogger}")
-async def contents(blogger: str,session: Session = Depends(db.session), ):
+
+
+# All List
+@router.get("/{blogger}/all")
+async def contents(blogger: str, session: Session = Depends(db.session), ):
     # 글 전체목록 불러오기
     results = session.query(Contents).filter(Contents.blogger == blogger).all()
     return results
 
+
+# All list in category
+@router.get("/{blogger}/{category_name}")
+async def contents_from_category(category_name: str , blogger: str, session: Session = Depends(db.session)):
+    category_id_res = session.query(Category).filter(Category.blogger == blogger, Category.name == category_name).all()
+    category_id = category_id_res[0].id
+    results = session.query(Contents).filter(Contents.category_id == category_id).all()
+    return results
+
+
 # Detail
 @router.get("/{blogger}/{id}")
-async def content(blogger: str,id: int, session: Session = Depends(db.session)):
+async def content(blogger: str, id: int, session: Session = Depends(db.session)):
     # 글 받아오기
     content = session.query(Contents).filter(Contents.id == id).first()
     comments = session.query(Comments).filter(Comments.content_id == id).all()
@@ -34,19 +43,24 @@ async def content(blogger: str,id: int, session: Session = Depends(db.session)):
 
     return result
 
-class Item(BaseModel):
+
+class PostModel(BaseModel):
     title: str
     content: str
     blogger: str
-    thumb: str= None
+    thumb: str = None
+
 
 @router.post("/write")
-async def content(item:Item,session: Session = Depends(db.session)):
+async def content(item: PostModel, session: Session = Depends(db.session)):
+    print(item)
+
     # 이미지 유무 판단
     if item.thumb is None:
-        Contents(title= item.title, content=item.content, blogger=item.blogger).create(session, auto_commit=True)
-        responses={200: {"status": "success", "detail":"No Thumb"}}
+        Contents(title=item.title, content=item.content, blogger=item.blogger).create(session, auto_commit=True)
+        responses = {200: {"status": "success", "detail": "No Thumb"}}
     else:
-        Contents(title=item.title, content=item.content, blogger=item.blogger, thumb= item.thumb).create(session, auto_commit=True)
-        responses={200: {"status": "success", "detail":"Thumb"}}
+        Contents(title=item.title, content=item.content, blogger=item.blogger, thumb=item.thumb).create(session,
+                                                                                                        auto_commit=True)
+        responses = {200: {"status": "success", "detail": "Thumb"}}
     return responses

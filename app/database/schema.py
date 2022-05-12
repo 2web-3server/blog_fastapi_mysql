@@ -70,7 +70,6 @@ class Comments(Base, BaseMixin):
     __tablename__ = "comment"
     email = Column(String(length=255), nullable=False)
     content = Column(Text(), nullable=False, default="내용을 입력 해 주세요")
-    password = Column(String(length=1000), nullable=False, default="No Thumb")
+    password = Column(String(length=1000), nullable=False)
     content_id = Column(Integer, ForeignKey("content.id"))
-
     owner = relationship("Contents", back_populates="comments")
