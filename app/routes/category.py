@@ -16,7 +16,7 @@ router = APIRouter(
 # All List
 @router.get("/{blogger}")
 async def get_category(blogger: str, session: Session = Depends(db.session), ):
-    # 글 전체목록 불러오기
+    # 블로거의 모든 카테고리 불러오기
     results = session.query(Category).filter(Category.blogger == blogger).all()
     return results
 
@@ -28,6 +28,7 @@ class Category_name(BaseModel):
 # All list in category
 @router.post("/{blogger}")
 async def contents_from_category(item: Category_name, blogger: str, session: Session = Depends(db.session)):
+    # 포스트로 전송 시 카테고리 추가
     results = Category(name=item.category, blogger=blogger).create(session, auto_commit=True)
 
     return results

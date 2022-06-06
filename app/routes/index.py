@@ -6,7 +6,7 @@ from app.database.conn import db, Base
 
 router = APIRouter()
 
-@router.get("/")
+@router.get("/refresh")
 async def index(session: Session = Depends(db.session),):
     """
     :param session:

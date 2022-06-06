@@ -22,16 +22,19 @@ async def contents(blogger: str, session: Session = Depends(db.session), ):
 
 
 # All list in category
-@router.get("/{blogger}/{category_name}")
-async def contents_from_category(category_name: str , blogger: str, session: Session = Depends(db.session)):
+@router.get("/{blogger}/category/{category_name}")
+async def contents_from_category(category_name: str, blogger: str, session: Session = Depends(db.session)):
+    # 카테고리 명으로 카테고리 객체 조회
     category_id_res = session.query(Category).filter(Category.blogger == blogger, Category.name == category_name).all()
+    # 조회되는 맨 처음 객체 선택
     category_id = category_id_res[0].id
+    # 해당하는 카테고리에 속하는 모든 글 불러오기
     results = session.query(Contents).filter(Contents.category_id == category_id).all()
     return results
 
 
 # Detail
-@router.get("/{blogger}/{id}")
+@router.get("/{blogger}/id/{id}")
 async def content(blogger: str, id: int, session: Session = Depends(db.session)):
     # 글 받아오기
     content = session.query(Contents).filter(Contents.id == id).first()
