@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from fastapi import APIRouter, Depends
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 from app.database.conn import db
 from app.database.schema import Contents, Comments, Category
@@ -15,7 +15,7 @@ router = APIRouter(
 
 # All List
 @router.get("/{blogger}/all")
-async def contents(blogger: str, session: Session = Depends(db.session), ):
+async def get_all_contents(blogger: str = Field(title="블로거 명", description="블로거 명"), session: Session = Depends(db.session), ):
     # 글 전체목록 불러오기
     results = session.query(Contents).filter(Contents.blogger == blogger).all()
     return results
@@ -34,8 +34,8 @@ async def contents_from_category(category_name: str, blogger: str, session: Sess
 
 
 # Detail
-@router.get("/{blogger}/id/{id}")
-async def content(blogger: str, id: int, session: Session = Depends(db.session)):
+@router.get("/{blogger}/{id}")
+async def get_one_content(blogger: str, id: int, session: Session = Depends(db.session)):
     # 글 받아오기
     content = session.query(Contents).filter(Contents.id == id).first()
     comments = session.query(Comments).filter(Comments.content_id == id).all()
@@ -48,14 +48,14 @@ async def content(blogger: str, id: int, session: Session = Depends(db.session))
 
 
 class PostModel(BaseModel):
-    title: str
+    title: str = Field(title="글 제목")
     content: str
     blogger: str
     thumb: str = None
 
 
 @router.post("/write")
-async def content(item: PostModel, session: Session = Depends(db.session)):
+async def create_content(item: PostModel, session: Session = Depends(db.session)):
     print(item)
 
     # 이미지 유무 판단

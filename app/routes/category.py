@@ -27,7 +27,7 @@ class Category_name(BaseModel):
 
 # All list in category
 @router.post("/{blogger}")
-async def contents_from_category(item: Category_name, blogger: str, session: Session = Depends(db.session)):
+async def create_category(item: Category_name, blogger: str, session: Session = Depends(db.session)):
     # 포스트로 전송 시 카테고리 추가
     results = Category(name=item.category, blogger=blogger).create(session, auto_commit=True)
 
